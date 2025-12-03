@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIKER – Smart Study Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00e5ff;
+            --secondary-color: #7b61ff;
+            --accent-color: #ff2a6d;
+            --text-color: #f0f8ff;
+            --bg-color: #0a0a0f;
+            --card-bg: rgba(15, 15, 25, 0.85);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --tech-blue: #0066ff;
+            --tech-purple: #9d4edd;
+            --success-color: #00ff88;
+            --warning-color: #ffaa00;
+            --danger-color: #ff3c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 102, 255, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 85% 30%, rgba(157, 78, 221, 0.05) 0%, transparent 20%),
+                linear-gradient(to bottom, rgba(10, 10, 15, 0.95), rgba(10, 10, 15, 0.98)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="rgba(0, 229, 255, 0.03)" stroke-width="1"/><path d="M0,50 L100,50 M50,0 L50,100" stroke="rgba(123, 97, 255, 0.03)" stroke-width="0.5"/></svg>');
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+            padding: 15px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+        }
+
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(90deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+        }
+
+        .logo-icon span {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 26px;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text h1 {
+            font-size: 26px;
+            margin-bottom: 0;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            opacity: 0.8;
+            letter-spacing: 2px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 16px;
+            position: relative;
+            padding: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        nav ul li a:hover::after,
+        nav ul li a.active::after {
+            width: 100%;
+        }
+
+        nav ul li a.active {
+            color: var(--primary-color);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 100px;
+            min-height: calc(100vh - 180px);
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 229, 255, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .hero h2 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.5);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 229, 255, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        /* Form Styles */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+
+        .slider-container {
+            margin-top: 15px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+        }
+
+        .slider-value {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .subjects-container {
+            margin-top: 20px;
+        }
+
+        .subject-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: rgba(255, 60, 60, 0.2);
+            color: var(--danger-color);
+            border: 1px solid rgba(255, 60, 60, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 60, 60, 0.3);
+        }
+
+        .btn-add {
+            margin-top: 10px;
+        }
+
+        /* Plan Page */
+        .plan-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-card h3 {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--success-color);
+        }
+
+        .weekly-schedule {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .day-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+
+        .day-card.holiday {
+            background: rgba(157, 78, 221, 0.1);
+            border-color: var(--secondary-color);
+        }
+
+        .day-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .day-card .subject {
+            font-size: 14px;
+            padding: 5px;
+            margin-bottom: 5px;
+            background: rgba(0, 229, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .plan-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Streak Page */
+        .streak-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .streak-display {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .streak-count {
+            font-size: 5rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: var(--success-color);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .streak-label {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .streak-warning {
+            color: var(--warning-color);
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+
+        .completion-button {
+            padding: 20px 50px;
+            font-size: 1.3rem;
+            margin-top: 20px;
+        }
+
+        /* Developer Page */
+        .developer-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .developer-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .developer-name {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .developer-bio {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .skill-tag {
+            background: rgba(0, 229, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .contact-link:hover {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .contact-link i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        /* Congratulations Animation */
+        .congratulations-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .congratulations-content {
+            text-align: center;
+            padding: 40px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 2px solid var(--success-color);
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .congratulations-content h2 {
+            font-size: 3rem;
+            color: var(--success-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.7);
+        }
+
+        .congratulations-content p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+        }
+
+        .close-congratulations {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 15, 0.95);
+            border-top: 1px solid rgba(0, 229, 255, 0.1);
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .copyright {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero h2 {
+                font-size: 2.8rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 15px;
+            }
+            
+            nav ul {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: rgba(10, 10, 15, 0.98);
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 40px;
+                transition: left 0.5s ease;
+                z-index: 999;
+            }
+            
+            nav ul.active {
+                left: 0;
+            }
+            
+            nav ul li {
+                margin: 0 0 30px 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+            
+            .developer-name {
+                font-size: 2.5rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .streak-count {
+                font-size: 4rem;
+            }
+            
+            .contact-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .plan-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="#home" class="logo">
+                <div class="logo-icon">
+                    <span>F</span>
+                </div>
+                <div class="logo-text">
+                    <h1>FIKER</h1>
+                    <p>SMART STUDY PLANNER</p>
+                </div>
+            </a>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#setup" class="nav-link">Study Setup</a></li>
+                    <li><a href="#plan" class="nav-link">Study Plan</a></li>
+                    <li><a href="#streak" class="nav-link">Daily Streak</a></li>
+                    <li><a href="#developer" class="nav-link">Developer</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <div class="container">
+                    <h2>AI-Powered Smart Study Planner</h2>
+                    <p>Revolutionize your study routine with FIKER – an intelligent system that creates personalized study plans based on your subjects, weaknesses, and available time.</p>
+                    <a href="#setup" class="cta-button get-started-btn">Get Started</a>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="container">
+                    <h2 class="section-title">How FIKER Works</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <h3>Set Exam Dates</h3>
+                            <p>Input your upcoming exam dates and let FIKER calculate the optimal study timeline for maximum efficiency.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3>Add Subjects</h3>
+                            <p>Create your subject list and rate your weakness level for each (1-5). FIKER prioritizes subjects accordingly.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <h3>Smart Calculation</h3>
+                            <p>The AI algorithm calculates the time needed for each subject and generates a complete weekly study plan.</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <h3>Track Streaks</h3>
+                            <p>Build and maintain your study streak with daily tracking. Stay motivated with visual progress indicators.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Study Setup Page -->
+        <section id="setup" class="page">
+            <div class="container">
+                <h2 class="section-title">Study Setup</h2>
+                <div class="form-container">
+                    <form id="studySetupForm">
+                        <div class="form-group">
+                            <label for="examDate">Exam Date</label>
+                            <input type="date" id="examDate" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dailyHours">Daily Study Hours</label>
+                            <input type="number" id="dailyHours" class="form-control" min="1" max="12" value="3" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <h3>Subjects</h3>
+                            <div id="subjectsContainer" class="subjects-container">
+                                <!-- Subjects will be added here dynamically -->
+                                <div class="subject-item">
+                                    <input type="text" class="form-control subject-name" placeholder="Subject Name" required>
+                                    <div class="slider-container">
+                                        <label>Weakness Level: <span class="weakness-value">3</span></label>
+                                        <input type="range" class="slider weakness-slider" min="1" max="5" value="3">
+                                    </div>
+                                    <button type="button" class="btn btn-danger remove-subject"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-add" id="addSubject"><i class="fas fa-plus"></i> Add Subject</button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="holidays">Holidays Per Week</label>
+                            <input type="number" id="holidays" class="form-control" min="1" max="2" value="1" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">Generate Study Plan</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Auto-Generated Plan Page -->
+        <section id="plan" class="page">
+            <div class="container">
+                <h2 class="section-title">Your Study Plan</h2>
+                
+                <div class="plan-summary">
+                    <div class="summary-card">
+                        <h3>Total Subjects</h3>
+                        <div class="value" id="totalSubjects">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Study Days Per Week</h3>
+                        <div class="value" id="studyDays">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Daily Study Hours</h3>
+                        <div class="value" id="dailyStudyHours">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Days Until Exam</h3>
+                        <div class="value" id="daysUntilExam">0</div>
+                    </div>
+                </div>
+                
+                <div class="weekly-schedule">
+                    <h3>Weekly Schedule</h3>
+                    <div id="scheduleGrid" class="schedule-grid">
+                        <!-- Schedule will be generated here -->
+                    </div>
+                </div>
+                
+                <div class="plan-actions">
+                    <button class="btn btn-primary" id="savePlan"><i class="fas fa-save"></i> Save Plan</button>
+                    <button class="btn btn-secondary" id="printPlan"><i class="fas fa-print"></i> Print Plan</button>
+                    <button class="btn btn-secondary" id="downloadPDF"><i class="fas fa-download"></i> Download PDF</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daily Streak & Goal Page -->
+        <section id="streak" class="page">
+            <div class="container">
+                <h2 class="section-title">Daily Streak & Goal</h2>
+                
+                <div class="streak-container">
+                    <div class="streak-display">
+                        <div class="streak-count" id="streakCount">0</div>
+                        <div class="streak-label">Day Streak</div>
+                        <p>Complete your daily study goal to maintain your streak. If you miss a day, your streak will reset to zero.</p>
+                        <div class="streak-warning" id="streakWarning"></div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <h3>Today's Progress</h3>
+                        <div class="progress-bar" style="width: 100%; height: 20px; background: rgba(0,0,0,0.3); border-radius: 10px; margin: 20px 0; overflow: hidden;">
+                            <div id="progressFill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); transition: width 1s ease;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                            <span>0%</span>
+                            <span id="progressPercentage">0%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary completion-button" id="completeDay"><i class="fas fa-check-circle"></i> Mark Today Completed</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Page -->
+        <section id="developer" class="page">
+            <div class="container">
+                <h2 class="section-title">About the Developer</h2>
+                
+                <div class="developer-profile">
+                    <div class="developer-card">
+                        <div class="developer-name">SEFAT</div>
+                        <div class="developer-bio">
+                            <p>A skilled and passionate web developer with expertise in HTML, CSS, and JavaScript. Specializes in creating intelligent systems and automated tools with a strong focus on modern UI/UX design.</p>
+                            <p>Dedicated to building high-performance, optimized code and solving real-life problems through innovative digital products. Constantly learning and adapting to new technologies to deliver cutting-edge solutions.</p>
+                        </div>
+                        
+                        <div class="skills-list">
+                            <div class="skill-tag">HTML5</div>
+                            <div class="skill-tag">CSS3</div>
+                            <div class="skill-tag">JavaScript</div>
+                            <div class="skill-tag">UI/UX Design</div>
+                            <div class="skill-tag">Responsive Design</div>
+                            <div class="skill-tag">Web Animations</div>
+                        </div>
+                        
+                        <div class="contact-links">
+                            <a href="mailto:sefat111008@gmail.com" target="_blank" class="contact-link">
+                                <i class="fas fa-envelope"></i>
+                                <span>Email</span>
+                            </a>
+                            <a href="https://www.facebook.com/share/1A6GETVjDo/" target="_blank" class="contact-link">
+                                <i class="fab fa-facebook"></i>
+                                <span>Facebook</span>
+                            </a>
+                            <a href="https://www.instagram.com/sefat.111008?igsh=MXJoaDJlb29tanl0aw==" target="_blank" class="contact-link">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Congratulations Overlay -->
+    <div class="congratulations-overlay" id="congratulationsOverlay">
+        <div class="congratulations-content">
+            <h2>Congratulations!</h2>
+            <p>You've successfully completed your daily study goal. Keep up the great work and maintain your streak!</p>
+            <button class="btn btn-primary close-congratulations" id="closeCongratulations">Continue</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-logo">
+                <div class="logo-icon">
+                    <span>F</span>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0;">FIKER</h3>
+                    <p style="font-size: 0.8rem; opacity: 0.8;">Smart Study Planner</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 FIKER. All rights reserved.
+            </div>
+            
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#developer">Contact</a>
+                <a href="#privacy">Privacy</a>
+                <a href="#terms">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Global variables
+        let currentStreak = parseInt(localStorage.getItem('fikarStreak')) || 0;
+        let lastCompletedDate = localStorage.getItem('fikarLastCompleted') || '';
+        let subjects = [];
+        let studyPlan = {};
+        
+        // DOM elements
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navMenu = document.getElementById('navMenu');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+        const getStartedBtn = document.querySelector('.get-started-btn');
+        const addSubjectBtn = document.getElementById('addSubject');
+        const subjectsContainer = document.getElementById('subjectsContainer');
+        const studySetupForm = document.getElementById('studySetupForm');
+        const congratulationsOverlay = document.getElementById('congratulationsOverlay');
+        const closeCongratulationsBtn = document.getElementById('closeCongratulations');
+        const completeDayBtn = document.getElementById('completeDay');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercentage = document.getElementById('progressPercentage');
+        const streakCount = document.getElementById('streakCount');
+        const streakWarning = document.getElementById('streakWarning');
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize navigation
+            updateNavigation();
+            
+            // Initialize streak system
+            updateStreak();
+            
+            // Check if we need to show a specific page from URL hash
+            const hash = window.location.hash;
+            if (hash) {
+                showPage(hash.substring(1));
+            }
+        });
+        
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            
+            // Navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('href').substring(1);
+                    showPage(pageId);
+                    toggleMobileMenu(false);
+                });
+            });
+            
+            // Get started button
+            if (getStartedBtn) {
+                getStartedBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showPage('setup');
+                });
+            }
+            
+            // Add subject button
+            addSubjectBtn.addEventListener('click', addSubject);
+            
+            // Remove subject buttons (delegated)
+            subjectsContainer.addEventListener('click', function(e) {
+                if (e.target.closest('.remove-subject')) {
+                    e.target.closest('.subject-item').remove();
+                    updateSubjectCount();
+                }
+                
+                // Update slider values
+                if (e.target.classList.contains('weakness-slider')) {
+                    const slider = e.target;
+                    const valueSpan = slider.closest('.slider-container').querySelector('.weakness-value');
+                    valueSpan.textContent = slider.value;
+                }
+            });
+            
+            // Study setup form submission
+            studySetupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                generateStudyPlan();
+            });
+            
+            // Complete day button
+            completeDayBtn.addEventListener('click', completeDay);
+            
+            // Close congratulations overlay
+            closeCongratulationsBtn.addEventListener('click', function() {
+                congratulationsOverlay.style.display = 'none';
+            });
+            
+            // Plan action buttons
+            document.getElementById('savePlan')?.addEventListener('click', savePlan);
+            document.getElementById('printPlan')?.addEventListener('click', printPlan);
+            document.getElementById('downloadPDF')?.addEventListener('click', downloadPDF);
+        }
+        
+        // Toggle mobile menu
+        function toggleMobileMenu(forceClose) {
+            if (forceClose === false) {
+                navMenu.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            } else {
+                navMenu.classList.toggle('active');
+                mobileMenuBtn.innerHTML = navMenu.classList.contains('active') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            }
+        }
+        
+        // Show specific page
+        function showPage(pageId) {
+            // Hide all pages
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                
+                // Update active nav link
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${pageId}`) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // Update URL hash
+                window.location.hash = pageId;
+                
+                // Initialize page-specific content
+                if (pageId === 'plan' && studyPlan.subjects) {
+                    displayStudyPlan();
+                }
+            }
+        }
+        
+        // Update navigation based on current page
+        function updateNavigation() {
+            const currentHash = window.location.hash.substring(1) || 'home';
+            showPage(currentHash);
+        }
+        
+        // Add a new subject input
+        function addSubject() {
+            const subjectItem = document.createElement('div');
+            subjectItem.className = 'subject-item';
+            subjectItem.innerHTML = `
+                <input type="text" class="form-control subject-name" placeholder="Subject Name" required>
+                <div class="slider-container">
+                    <label>Weakness Level: <span class="weakness-value">3</span></label>
+                    <input type="range" class="slider weakness-slider" min="1" max="5" value="3">
+                </div>
+                <button type="button" class="btn btn-danger remove-subject"><i class="fas fa-trash"></i></button>
+            `;
+            subjectsContainer.appendChild(subjectItem);
+            updateSubjectCount();
+        }
+        
+        // Update the subject count display
+        function updateSubjectCount() {
+            const subjectItems = subjectsContainer.querySelectorAll('.subject-item');
+            // Update in setup page if needed
+        }
+        
+        // Generate study plan based on form inputs
+        function generateStudyPlan() {
+            // Get form values
+            const examDate = new Date(document.getElementById('examDate').value);
+            const dailyHours = parseInt(document.getElementById('dailyHours').value);
+            const holidaysPerWeek = parseInt(document.getElementById('holidays').value);
+            
+            // Get subjects
+            const subjectItems = subjectsContainer.querySelectorAll('.subject-item');
+            subjects = [];
+            
+            subjectItems.forEach(item => {
+                const name = item.querySelector('.subject-name').value;
+                const weakness = parseInt(item.querySelector('.weakness-slider').value);
+                
+                if (name.trim()) {
+                    subjects.push({
+                        name: name.trim(),
+                        weakness: weakness,
+                        hoursNeeded: weakness * 2 // Simple calculation: more weakness = more hours needed
+                    });
+                }
+            });
+            
+            if (subjects.length === 0) {
+                alert('Please add at least one subject');
+                return;
+            }
+            
+            // Calculate total hours needed
+            const totalHoursNeeded = subjects.reduce((sum, subject) => sum + subject.hoursNeeded, 0);
+            
+            // Calculate days until exam
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            examDate.setHours(0, 0, 0, 0);
+            const daysUntilExam = Math.max(1, Math.ceil((examDate - today) / (1000 * 60 * 60 * 24)));
+            
+            // Calculate study days per week
+            const studyDaysPerWeek = 7 - holidaysPerWeek;
+            
+            // Create study plan object
+            studyPlan = {
+                examDate: examDate.toISOString().split('T')[0],
+                dailyHours: dailyHours,
+                holidaysPerWeek: holidaysPerWeek,
+                studyDaysPerWeek: studyDaysPerWeek,
+                daysUntilExam: daysUntilExam,
+                subjects: subjects,
+                totalHoursNeeded: totalHoursNeeded,
+                weeklySchedule: generateWeeklySchedule(subjects, studyDaysPerWeek, dailyHours)
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('fikarStudyPlan', JSON.stringify(studyPlan));
+            
+            // Show the plan page
+            showPage('plan');
+        }
+        
+        // Generate a weekly schedule
+        function generateWeeklySchedule(subjects, studyDays, dailyHours) {
+            const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const schedule = {};
+            
+            // Distribute subjects across study days
+            let subjectIndex = 0;
+            
+            for (let i = 0; i < 7; i++) {
+                const dayName = daysOfWeek[i];
+                const isStudyDay = i < studyDays; // Simple distribution: first X days are study days
+                
+                if (isStudyDay) {
+                    // Assign subjects to this day
+                    const daySubjects = [];
+                    const hoursPerSubject = dailyHours / 2; // Assume 2 subjects per day
+                    
+                    // Add 2 subjects per day (or adjust based on available hours)
+                    for (let j = 0; j < Math.min(2, subjects.length); j++) {
+                        if (subjectIndex >= subjects.length) subjectIndex = 0;
+                        
+                        daySubjects.push({
+                            name: subjects[subjectIndex].name,
+                            hours: hoursPerSubject,
+                            weakness: subjects[subjectIndex].weakness
+                        });
+                        
+                        subjectIndex++;
+                    }
+                    
+                    schedule[dayName] = {
+                        isHoliday: false,
+                        subjects: daySubjects
+                    };
+                } else {
+                    // This is a holiday
+                    schedule[dayName] = {
+                        isHoliday: true,
+                        subjects: []
+                    };
+                }
+            }
+            
+            return schedule;
+        }
+        
+        // Display the generated study plan
+        function displayStudyPlan() {
+            if (!studyPlan.subjects) {
+                // Try to load from localStorage
+                const savedPlan = localStorage.getItem('fikarStudyPlan');
+                if (savedPlan) {
+                    studyPlan = JSON.parse(savedPlan);
+                } else {
+                    return;
+                }
+            }
+            
+            // Update summary cards
+            document.getElementById('totalSubjects').textContent = studyPlan.subjects.length;
+            document.getElementById('studyDays').textContent = studyPlan.studyDaysPerWeek;
+            document.getElementById('dailyStudyHours').textContent = studyPlan.dailyHours;
+            document.getElementById('daysUntilExam').textContent = studyPlan.daysUntilExam;
+            
+            // Generate schedule grid
+            const scheduleGrid = document.getElementById('scheduleGrid');
+            scheduleGrid.innerHTML = '';
+            
+            const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            daysOfWeek.forEach(day => {
+                const dayCard = document.createElement('div');
+                dayCard.className = `day-card ${studyPlan.weeklySchedule[day]?.isHoliday ? 'holiday' : ''}`;
+                
+                let subjectsHTML = '';
+                if (studyPlan.weeklySchedule[day] && !studyPlan.weeklySchedule[day].isHoliday) {
+                    studyPlan.weeklySchedule[day].subjects.forEach(subject => {
+                        subjectsHTML += `<div class="subject">${subject.name} (${subject.hours}h)</div>`;
+                    });
+                } else {
+                    subjectsHTML = '<div class="subject" style="background: rgba(157, 78, 221, 0.2);">HOLIDAY</div>';
+                }
+                
+                dayCard.innerHTML = `
+                    <h4>${day}</h4>
+                    ${subjectsHTML}
+                `;
+                
+                scheduleGrid.appendChild(dayCard);
+            });
+        }
+        
+        // Update streak system
+        function updateStreak() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Check if streak should be reset (missed a day)
+            if (lastCompletedDate && lastCompletedDate !== today) {
+                const lastDate = new Date(lastCompletedDate);
+                const currentDate = new Date(today);
+                const diffTime = Math.abs(currentDate - lastDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays > 1) {
+                    // Streak broken
+                    currentStreak = 0;
+                    localStorage.setItem('fikarStreak', currentStreak);
+                    streakWarning.textContent = "You missed a day! Your streak has been reset.";
+                } else if (diffDays === 1) {
+                    streakWarning.textContent = "Complete today's goal to maintain your streak!";
+                }
+            }
+            
+            // Update streak display
+            streakCount.textContent = currentStreak;
+            
+            // Update progress (simulate progress for demo)
+            const savedProgress = localStorage.getItem('fikarTodayProgress') || '0';
+            const progress = parseInt(savedProgress);
+            progressFill.style.width = `${progress}%`;
+            progressPercentage.textContent = `${progress}%`;
+            
+            // If already completed today, disable button
+            if (lastCompletedDate === today) {
+                completeDayBtn.disabled = true;
+                completeDayBtn.innerHTML = '<i class="fas fa-check-circle"></i> Today Completed';
+                completeDayBtn.style.background = 'var(--success-color)';
+            }
+        }
+        
+        // Complete today's study goal
+        function completeDay() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Check if already completed today
+            if (lastCompletedDate === today) {
+                alert("You've already completed today's goal!");
+                return;
+            }
+            
+            // Animate progress bar
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                progressFill.style.width = `${progress}%`;
+                progressPercentage.textContent = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Update streak
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayStr = yesterday.toISOString().split('T')[0];
+                    
+                    if (lastCompletedDate === yesterdayStr) {
+                        // Consecutive day
+                        currentStreak++;
+                    } else if (lastCompletedDate !== today) {
+                        // New streak or first time
+                        currentStreak = 1;
+                    }
+                    
+                    // Update last completed date
+                    lastCompletedDate = today;
+                    
+                    // Save to localStorage
+                    localStorage.setItem('fikarStreak', currentStreak);
+                    localStorage.setItem('fikarLastCompleted', lastCompletedDate);
+                    localStorage.setItem('fikarTodayProgress', '100');
+                    
+                    // Update UI
+                    streakCount.textContent = currentStreak;
+                    streakWarning.textContent = "Great job! Come back tomorrow to continue your streak.";
+                    completeDayBtn.disabled = true;
+                    completeDayBtn.innerHTML = '<i class="fas fa-check-circle"></i> Today Completed';
+                    completeDayBtn.style.background = 'var(--success-color)';
+                    
+                    // Show congratulations animation
+                    showCongratulations();
+                }
+            }, 30);
+        }
+        
+        // Show congratulations animation
+        function showCongratulations() {
+            congratulationsOverlay.style.display = 'flex';
+            
+            // Create confetti effect
+            createConfetti();
+        }
+        
+        // Create confetti animation
+        function createConfetti() {
+            const colors = ['#00e5ff', '#7b61ff', '#ff2a6d', '#00ff88', '#ffaa00'];
+            const overlay = document.getElementById('congratulationsOverlay');
+            
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-20px';
+                confetti.style.opacity = Math.random() + 0.5;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                overlay.appendChild(confetti);
+                
+                // Animate confetti
+                const animation = confetti.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${Math.random() * 100 - 50}px, 100vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)'
+                });
+                
+                // Remove confetti after animation
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
+        
+        // Save plan to localStorage
+        function savePlan() {
+            localStorage.setItem('fikarStudyPlan', JSON.stringify(studyPlan));
+            alert('Study plan saved successfully!');
+        }
+        
+        // Print plan
+        function printPlan() {
+            window.print();
+        }
+        
+        // Download as PDF (simulated)
+        function downloadPDF() {
+            alert('PDF download would be implemented with a library like jsPDF in a real application.');
+            // In a real implementation, we would use jsPDF to generate and download a PDF
+        }
+        
+        // Initialize with a sample subject
+        addSubject();
+    </script>
+</body>
+</html>
